@@ -1,0 +1,51 @@
+.revezone-menu-container {
+  position: relative;
+  height: calc(100% - 4rem);
+  margin-top: 1rem;
+
+  .os-is-macos.is-in-revezone-native-app & {
+    margin-top: 0;
+  }
+
+  .menu-list {
+    overflow-y: scroll;
+    height: 100%;
+    padding-bottom: 2rem;
+  }
+}
+
+.app {
+  display: flex;
+  font-family: sans-serif;
+}
+
+.sidebar {
+  padding: 10px;
+  width: 250px;
+}
+
+.sidebar .header {
+  margin-bottom: 10px;
+}
+
+.doc-item {
+  padding: 5px;
+}
+
+.doc-item.active,
+.doc-item:hover {
+  background-color: #f0f0f0;
+}
+
+.top-bar {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.top-bar button {
+  margin: auto 2px;
+}
+
+.main-content {
+  flex: 1;
+}

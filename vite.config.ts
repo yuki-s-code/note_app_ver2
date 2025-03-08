@@ -1,3 +1,5 @@
+//vite.config.ts
+
 import { rmSync } from 'node:fs'
 import path from 'node:path'
 import { defineConfig } from 'vite'
@@ -64,6 +66,14 @@ export default defineConfig(({ command }) => {
         renderer: {},
       }),
     ],
+    optimizeDeps: {
+      include: ['pdfjs-dist'], // PDF.js の依存関係を最適化
+    },
+    build: {
+      rollupOptions: {
+        external: ['pdfjs-dist/build/pdf.worker'], // PDF.js ワーカーの設定
+      },
+    },
     server: process.env.VSCODE_DEBUG && (() => {
       const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL)
       return {

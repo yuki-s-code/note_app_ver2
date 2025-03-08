@@ -1,3 +1,4 @@
+import { ipcRenderer } from 'electron'
 import type { ProgressInfo } from 'electron-updater'
 import { useCallback, useEffect, useState } from 'react'
 import Modal from '@/components/update/Modal'
@@ -18,7 +19,7 @@ const Update = () => {
     onOk?: () => void
   }>({
     onCancel: () => setModalOpen(false),
-    onOk: () => window.ipcRenderer.invoke('start-download'),
+    onOk: () => ipcRenderer.invoke('start-download'),
   })
 
   const checkUpdate = async () => {
@@ -26,7 +27,7 @@ const Update = () => {
     /**
      * @type {import('electron-updater').UpdateCheckResult | null | { message: string, error: Error }}
      */
-    const result = await window.ipcRenderer.invoke('check-update')
+    const result = await ipcRenderer.invoke('check-update')
     setProgressInfo({ percent: 0 })
     setChecking(false)
     setModalOpen(true)
@@ -45,7 +46,7 @@ const Update = () => {
         ...state,
         cancelText: 'Cancel',
         okText: 'Update',
-        onOk: () => window.ipcRenderer.invoke('start-download'),
+        onOk: () => ipcRenderer.invoke('start-download'),
       }))
       setUpdateAvailable(true)
     } else {
@@ -68,22 +69,22 @@ const Update = () => {
       ...state,
       cancelText: 'Later',
       okText: 'Install now',
-      onOk: () => window.ipcRenderer.invoke('quit-and-install'),
+      onOk: () => ipcRenderer.invoke('quit-and-install'),
     }))
   }, [])
 
   useEffect(() => {
     // Get version information and whether to update
-    window.ipcRenderer.on('update-can-available', onUpdateCanAvailable)
-    window.ipcRenderer.on('update-error', onUpdateError)
-    window.ipcRenderer.on('download-progress', onDownloadProgress)
-    window.ipcRenderer.on('update-downloaded', onUpdateDownloaded)
+    ipcRenderer.on('update-can-available', onUpdateCanAvailable)
+    ipcRenderer.on('update-error', onUpdateError)
+    ipcRenderer.on('download-progress', onDownloadProgress)
+    ipcRenderer.on('update-downloaded', onUpdateDownloaded)
 
     return () => {
-      window.ipcRenderer.off('update-can-available', onUpdateCanAvailable)
-      window.ipcRenderer.off('update-error', onUpdateError)
-      window.ipcRenderer.off('download-progress', onDownloadProgress)
-      window.ipcRenderer.off('update-downloaded', onUpdateDownloaded)
+      ipcRenderer.off('update-can-available', onUpdateCanAvailable)
+      ipcRenderer.off('update-error', onUpdateError)
+      ipcRenderer.off('download-progress', onDownloadProgress)
+      ipcRenderer.off('update-downloaded', onUpdateDownloaded)
     }
   }, [])
 

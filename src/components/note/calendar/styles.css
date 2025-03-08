@@ -1,0 +1,25 @@
+/* 例: styles.css などに記載 */
+
+/* 選択された日の背景色を少し強調 */
+.selected-day {
+  background-color: #3b82f6 !important; /* 例として青 */
+  color: white !important;
+}
+
+/* スケジュールがある日のドット表示 */
+.has-schedule {
+  position: relative; /* 擬似要素を重ねるために relative */
+}
+
+.has-schedule::after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 0px; /* 日付文字の下あたりにドットを表示 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: gainsboro;
+  border-radius: 50%;
+}

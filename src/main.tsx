@@ -1,17 +1,35 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App'
+//main.tsx
 
-import './index.css'
+import React, { Component } from "react";
+import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+import { store } from "./libs/app/store";
+import App from "./App";
+import "./index.css";
 
-import './demos/ipc'
-// If you want use Node.js, the`nodeIntegration` needs to be enabled in the Main process.
-// import './demos/node'
+const container = document.getElementById("root")!;
+const root = createRoot(container);
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
+const showErrorOverlay = (err: Event) => {
+  const ErrorOverlay = customElements.get("vite-error-overlay");
+  if (!ErrorOverlay) {
+    return;
+  }
+  const overlay = new ErrorOverlay(err);
+  const body = document.body;
+  if (body !== null) {
+    body.appendChild(overlay);
+  }
+};
+
+window.addEventListener("error", showErrorOverlay);
+window.addEventListener("unhandledrejection", ({ reason }) =>
+  showErrorOverlay(reason)
+);
+root.render(
+  <Provider store={store}>
     <App />
-  </React.StrictMode>,
-)
+  </Provider>
+);
 
-postMessage({ payload: 'removeLoading' }, '*')
+postMessage({ payload: "removeLoading" }, "*");
