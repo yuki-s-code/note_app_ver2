@@ -13,11 +13,7 @@ import { Document, Outline, Page } from "react-pdf";
 import * as pdfjsLib from "pdfjs-dist/build/pdf";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker?worker&url";
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  AiOutlineLeft,
-  AiOutlineRight,
-  AiTwotonePrinter,
-} from "react-icons/ai";
+import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import {
@@ -57,12 +53,10 @@ export const PDFPreview = (
   useEffect(() => {
     const loadPdfWorker = async () => {
       try {
-        //@ts-ignore
-        const workerPath = await window.pdfWorkerPath.getWorkerPath();
         // PDF.jsのワーカーパスを設定
         pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
-        console.log("PDF Worker loaded from:", workerPath);
+        console.log("PDF Worker loaded from:", pdfjsWorker);
         setWorkerLoaded(true);
       } catch (error) {
         console.error("Failed to load PDF worker:", error);

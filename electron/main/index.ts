@@ -65,6 +65,7 @@ async function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       webSecurity: false,
+      allowRunningInsecureContent: true, // ✅ HTTP経由のスクリプト実行を許可
     },
   })
 
@@ -75,33 +76,7 @@ async function createWindow() {
   } else {
     win.loadFile(indexHtml)
   }
-  // **開発環境か本番環境かを判定**
-  ipcMain.handle("get-pdf-worker-path", () => {
-    const isDev = !app.isPackaged;
-    let workerPath: string;
 
-    if (isDev) {
-      // In development, look in the public folder of the project
-      workerPath = path.join(__dirname, "../public/pdf.worker.min.mjs");
-      console.log("86",workerPath)
-    } else {
-      // In production, look in the resources folder
-      workerPath = path.join(process.resourcesPath, "resources", "pdf.worker.min.mjs");
-      console.log("90",workerPath)
-    }
-    // Verify the worker path exists
-    if (!fs.existsSync(workerPath)) {
-      console.error(`PDF worker not found at: ${workerPath}`);
-      // Fallback to a web-accessible path
-      return "/pdf.worker.min.mjs";
-    }
-    // For production, return a file URL
-    if (!isDev) {
-      return `file://${workerPath}`;
-    }
-    // For development, return a relative path
-    return "/pdf.worker.min.mjs";
-  });
   // Test actively push message to the Electron-Renderer
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', new Date().toLocaleString())

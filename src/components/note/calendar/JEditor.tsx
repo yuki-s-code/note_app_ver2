@@ -4,7 +4,7 @@ import {
   BlockNoteSchema,
   defaultBlockSpecs,
   defaultInlineContentSpecs,
-  uploadToTmpFilesDotOrg_DEV_ONLY,
+  // uploadToTmpFilesDotOrg_DEV_ONLY,
   locales,
 } from "@blocknote/core";
 import "@blocknote/core/fonts/inter.css";
@@ -69,6 +69,12 @@ export const JEditor = ({ initialContent, result, setCodeItem }: any) => {
   const editor = useCreateBlockNote(
     {
       schema,
+      tables: {
+        splitCells: true,
+        cellBackgroundColor: true,
+        cellTextColor: true,
+        headers: true,
+      },
       initialContent: initialContent,
       uploadFile: saveFileLocally,
       _tiptapOptions: {

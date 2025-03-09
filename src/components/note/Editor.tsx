@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import {
   BlockNoteSchema,
-  uploadToTmpFilesDotOrg_DEV_ONLY,
+  // uploadToTmpFilesDotOrg_DEV_ONLY,
   defaultBlockSpecs,
   defaultInlineContentSpecs,
   locales,
@@ -159,6 +159,12 @@ function Editor({ initialContent, result, setCodeItem }: any) {
   const editor = useCreateBlockNote(
     {
       schema,
+      tables: {
+        splitCells: true,
+        cellBackgroundColor: true,
+        cellTextColor: true,
+        headers: true,
+      },
       initialContent: initialContentParsed,
       uploadFile: saveFileLocally,
       _tiptapOptions: {

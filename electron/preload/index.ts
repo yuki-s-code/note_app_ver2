@@ -1,25 +1,6 @@
 //preload/index.ts
 import { ipcRenderer, contextBridge } from 'electron'
 
-contextBridge.exposeInMainWorld("pdfWorkerPath", {
-  getWorkerPath: async () => {
-    try {
-      // In development, use a direct path
-      if (process.env.NODE_ENV === 'development') {
-        return "/pdf.worker.min.mjs";
-      }
-      
-      // In production, get the path from main process
-      const workerPath = await ipcRenderer.invoke("get-pdf-worker-path");
-      console.log("PDF Worker Path:", workerPath);
-      return workerPath;
-    } catch (error) {
-      console.error("Error getting PDF worker path:", error);
-      return "/pdf.worker.min.mjs";
-    }
-  },
-});
-
 contextBridge.exposeInMainWorld("electron", {
   saveFile: async (file: any) => {
     const buffer = await file.arrayBuffer(); // FileオブジェクトをArrayBufferに変換

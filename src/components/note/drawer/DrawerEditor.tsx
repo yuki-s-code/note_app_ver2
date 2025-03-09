@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef } from "react";
 import {
   BlockNoteSchema,
-  uploadToTmpFilesDotOrg_DEV_ONLY,
+  // uploadToTmpFilesDotOrg_DEV_ONLY,
   defaultBlockSpecs,
   defaultInlineContentSpecs,
   locales,
@@ -182,6 +182,12 @@ export const DrawerEditor = ({ initialContent }: any) => {
   const editor = useCreateBlockNote(
     {
       schema,
+      tables: {
+        splitCells: true,
+        cellBackgroundColor: true,
+        cellTextColor: true,
+        headers: true,
+      },
       initialContent: initialContent,
       uploadFile: saveFileLocally,
       _tiptapOptions: {
