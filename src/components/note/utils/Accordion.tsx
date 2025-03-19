@@ -28,8 +28,6 @@ const iconVariants = {
   tap: { scale: 0.9 },
 };
 const CHARACTER_LIMIT = 20000;
-const SVG_CIRCUMFERENCE = 31.4;
-
 export const AccordionComponent = ({
   editor,
   isChecked,
@@ -146,7 +144,9 @@ export const AccordionComponent = ({
         </div>
       </div>
       <motion.div
-        className={`relative w-full flex ${openAccordion == "note" ? "mt-4" : "mt-20"}`}
+        className={`relative w-full flex ${
+          openAccordion == "note" ? "mt-4" : "mt-20"
+        }`}
         initial={{ opacity: 0, y: 20, marginLeft: mentionId ? 0 : 128 }} // Include marginLeft in initial state
         animate={{ opacity: 1, y: 0, marginLeft: mentionId ? 0 : 128 }} // Include marginLeft in animate state
         exit={{ opacity: 0, y: -20, marginLeft: mentionId ? 0 : 128 }} // Include marginLeft in exit state

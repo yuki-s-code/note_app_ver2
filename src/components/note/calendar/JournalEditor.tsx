@@ -182,6 +182,7 @@ export const JournalEditor = memo(({ openRight }: any) => {
   if (status === "success")
     return (
       <motion.div
+        className=""
         initial={{ opacity: 0, y: 20, marginLeft: mentionId ? 0 : 144 }} // Include marginLeft in initial state
         animate={{ opacity: 1, y: 0, marginLeft: mentionId ? 0 : 144 }} // Include marginLeft in animate state
         exit={{ opacity: 0, y: -20, marginLeft: mentionId ? 0 : 144 }} // Include marginLeft in exit state

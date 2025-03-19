@@ -10,8 +10,7 @@ import { RiFilePdfFill, RiSideBarLine } from "react-icons/ri";
 import "./styles.css";
 import { Document, Outline, Page } from "react-pdf";
 //@ts-ignore
-import * as pdfjsLib from "pdfjs-dist/build/pdf";
-import pdfjsWorker from "pdfjs-dist/build/pdf.worker?worker&url";
+import { pdfjs } from "react-pdf";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 import "react-pdf/dist/esm/Page/TextLayer.css";
@@ -39,7 +38,11 @@ export const PDFPreview = (
   const [searchResults, setSearchResults] = useState<number[]>([]);
   const [currentSearchIndex, setCurrentSearchIndex] = useState<number>(0);
   const [isPageLoading, setIsPageLoading] = useState(false);
+  const [rotation, setRotation] = useState<number>(0);
 
+  const rotate = (angle: any) => {
+    setRotation((prev) => (prev + angle) % 360);
+  };
   useEffect(() => {
     const exitFullScreen = (e: KeyboardEvent) => {
       if (e.key === "Escape" && document.fullscreenElement) {
@@ -54,9 +57,19 @@ export const PDFPreview = (
     const loadPdfWorker = async () => {
       try {
         // PDF.jsのワーカーパスを設定
-        pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
-
-        console.log("PDF Worker loaded from:", pdfjsWorker);
+        // pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+        // Viteの環境で動作するようにworkerのパスを設定
+        pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+          "pdfjs-dist/build/pdf.worker.min.mjs",
+          import.meta.url
+        ).toString();
+        console.log(
+          "PDF Worker loaded from:",
+          new URL(
+            "pdfjs-dist/build/pdf.worker.min.mjs",
+            import.meta.url
+          ).toString()
+        );
         setWorkerLoaded(true);
       } catch (error) {
         console.error("Failed to load PDF worker:", error);
@@ -136,7 +149,7 @@ export const PDFPreview = (
   };
 
   const extractTextFromPage = async (pageNum: number): Promise<string> => {
-    const pdf = await pdfjsLib.getDocument(props.block.props.url).promise;
+    const pdf = await pdfjs.getDocument(props.block.props.url).promise;
     const page = await pdf.getPage(pageNum);
     const textContent = await page.getTextContent();
     return textContent.items.map((item: any) => item.str).join(" ");
@@ -255,20 +268,23 @@ export const PDFPreview = (
             <button onClick={downloadPDF}>
               <BsDownload size={20} />
             </button>
+            <button onClick={() => rotate(-90)}>⤺ 回転</button>
+            <button onClick={() => rotate(90)}>⤻ 回転</button>
           </div>
           <Document
             file={props.block.props.url}
             onLoadSuccess={({ numPages }) => setNumPages(numPages)}
           >
+            <Outline onItemClick={onItemClick} />
             <Page
               pageNumber={pageNumber}
               scale={scale}
+              rotate={rotation}
               renderTextLayer={true} // これを true にする
               renderAnnotationLayer={true}
               customTextRenderer={textRenderer}
               onLoadSuccess={() => setIsPageLoading(false)}
             />
-            <Outline onItemClick={onItemClick} />
           </Document>
         </div>
       </div>

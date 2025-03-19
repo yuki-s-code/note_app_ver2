@@ -119,3 +119,20 @@ export const useMutateBotMessage = () => {
     }
   });
 };
+
+// ★ Synonym一覧取得（NeDB連携）
+export const useQuerySynonyms = () => {
+  const fetchSynonyms = async (): Promise<any[]> => {
+    const { data } = await axiosInstance.get("/get_all_synonyms");
+    if (data.status) return data.synonyms;
+    throw new Error(data.msg);
+  };
+
+  return useQuery<any[], Error>({
+    queryKey: ["bot", "synonyms"],
+    queryFn: fetchSynonyms,
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 10,
+    refetchOnWindowFocus: false,
+  });
+};

@@ -99,7 +99,7 @@ expressApp.use(express.urlencoded({ extended: true, limit: '100mb' }));
 
 const port = 8088;
 
-expressApp.listen(port, () => {
+expressApp.listen(port, "127.0.0.1" ,() => {
   // eslint-disable-next-line prefer-template, prettier/prettier
   console.log('App server started: http://localhost:'+port)
 });
@@ -139,8 +139,10 @@ ipcMain.handle('open-win', (_, arg) => {
   const childWindow = new BrowserWindow({
     webPreferences: {
       preload,
-      nodeIntegration: true,
-      contextIsolation: false,
+      nodeIntegration: false,
+      contextIsolation: true,
+      webSecurity: false,
+      allowRunningInsecureContent: true, // ✅ HTTP経由のスクリプト実行を許可
     },
   })
 

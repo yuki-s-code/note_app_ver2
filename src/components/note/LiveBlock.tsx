@@ -313,20 +313,6 @@ export default function LiveBlock() {
             <div className="w-full relative">
               <div className="flex">
                 <div className="flex gap-2 mt-2 ml-2">
-                  {/* プリンターアイコン */}
-                  {/* <motion.div
-                    className="p-1 rounded-xl cursor-pointer text-blue-gray-200 hover:text-blue-gray-400"
-                    variants={iconVariants}
-                    initial="initial"
-                    whileHover="hover"
-                    whileTap="tap"
-                    onClick={() => {}}
-                  >
-                    <ReactToPrint
-                      trigger={() => <PrinterIcon />}
-                      content={() => componentRef.current}
-                    />
-                  </motion.div> */}
                   {/* ブックマークアイコン */}
                   <div className="relative">
                     <Checked />
@@ -361,14 +347,13 @@ export default function LiveBlock() {
                 </div>
               </div>
             </div>
-            <div className="h-full">
-              <div className="relative z-0 w-full">
-                <Editor
-                  initialContent={initialContent}
-                  result={result}
-                  setCodeItem={setCodeItem}
-                />
-              </div>
+
+            <div className="relative z-0 w-full">
+              <Editor
+                initialContent={initialContent}
+                result={result}
+                setCodeItem={setCodeItem}
+              />
             </div>
           </div>
         </div>

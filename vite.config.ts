@@ -20,6 +20,7 @@ export default defineConfig(({ command }) => {
       alias: {
         '@': path.join(__dirname, 'src'),
         'pdfjs-dist/build/pdf.worker': path.resolve(__dirname, 'node_modules/pdfjs-dist/build/pdf.worker.min.mjs'),
+        'kuromoji-dict': path.resolve(__dirname, 'node_modules/kuromoji/dict/')
       },
     },
     plugins: [
@@ -72,7 +73,7 @@ export default defineConfig(({ command }) => {
     },
     build: {
       rollupOptions: {
-        external: ['pdfjs-dist/build/pdf.worker'], // PDF.js ワーカーの設定
+        external: ['pdfjs-dist/build/pdf.worker', 'kuromoji'], // PDF.js ワーカーの設定
       },
     },
     server: process.env.VSCODE_DEBUG && (() => {

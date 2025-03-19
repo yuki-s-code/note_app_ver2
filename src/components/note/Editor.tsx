@@ -183,14 +183,6 @@ function Editor({ initialContent, result, setCodeItem }: any) {
     []
   );
 
-  const mentionLists = useMemo(
-    () =>
-      isChecked
-        ? convertToIndexTitles(journalItem(i))
-        : convertToIndexTitles(notJournalItem(i)),
-    [i, isChecked]
-  );
-
   // 追加: キャラクターカウントとワードカウントの状態管理
   const [charCount, setCharCount] = useState(
     editor._tiptapEditor.storage.characterCount.characters()
@@ -233,7 +225,7 @@ function Editor({ initialContent, result, setCodeItem }: any) {
       <div className="hover-scrollbar overflow-y-auto overflow-x-hidden appearance-none mt-4 block rounded-lg p-4 text-xl focus:outline-none">
         <div>
           <div>
-            <div className=" absolute -ml-3 top-20">
+            <div className=" absolute -ml-8 top-20">
               <EmojiPicker
                 icon={i[noteId].data.icon}
                 onChange={onIconChange}

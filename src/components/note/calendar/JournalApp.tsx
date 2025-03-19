@@ -69,7 +69,7 @@ export const JournalApp = memo(() => {
 
   return (
     <>
-      <div className="flex">
+      <div className="flex h-screen">
         {/* メインコンテンツエリア */}
         <div className="flex flex-col flex-1">
           {/* ヘッダー */}

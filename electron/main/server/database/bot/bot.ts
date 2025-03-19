@@ -30,6 +30,12 @@ export interface Intent {
   description?: string;
 }
 
+export interface Synonym {
+  id: string;
+  word: string;         // 基本語
+  synonyms: string[];   // 類義語配列
+}
+
 // ── DB 初期化 ─────────────────────────────────────────────────────────────
 function initializeDB<T>(filename: string): Datastore<T> {
   return new Datastore<T>({
@@ -45,6 +51,7 @@ function initializeDB<T>(filename: string): Datastore<T> {
 export const botDB = initializeDB<Bot>('data/bot.db');
 export const botCategoryDB = initializeDB<Category>('data/botCategory.db');
 export const intentDB = initializeDB<Intent>('data/intent.db');
+export const synonymDB = initializeDB<Synonym>('data/synonym.db');
 
 // ── NeDB の Promise 化 ───────────────────────────────────────────────────
 type QueryOptions = { sort?: any; skip?: number; limit?: number };
@@ -103,6 +110,7 @@ function promisifyNeDB<T>(db: Datastore<T>) {
 const botDBAsync = promisifyNeDB<Bot>(botDB);
 const botCategoryDBAsync = promisifyNeDB<Category>(botCategoryDB);
 const intentDBAsync = promisifyNeDB<Intent>(intentDB);
+const synonymDBAsync = promisifyNeDB<Synonym>(synonymDB);
 
 // ── CRUD 関数 ─────────────────────────────────────────────────────────────
 // Bot 関連
@@ -176,3 +184,21 @@ export const updateIntent = async (
 // 補助関数：指定 ID のインテントを取得
 export const getIntentById = async (id: string): Promise<Intent | null> =>
   await intentDBAsync.findOne({ id });
+
+// Synonym取得（全件）
+export const getAllSynonyms = async (): Promise<Synonym[]> => await synonymDBAsync.find({});
+
+// Synonym追加（ID重複チェック付き）
+export const addSynonym = async (synonym: Synonym): Promise<Synonym> => {
+  const existing = await synonymDBAsync.findOne({ id: synonym.id });
+  if (existing) throw new Error('このSynonym IDは既に存在します');
+  return await synonymDBAsync.insert(synonym);
+};
+
+// Synonym更新（類義語追加・更新）
+export const updateSynonym = async (id: string, updateData: Partial<Synonym>): Promise<number> =>
+  await synonymDBAsync.update({ id }, { $set: updateData }, {});
+
+// Synonym削除
+export const deleteSynonym = async (id: string): Promise<number> =>
+  await synonymDBAsync.remove({ id }, {});

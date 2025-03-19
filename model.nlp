@@ -44,9 +44,22 @@
           },
           "useStemDict": true
         },
-        "stemDict": {},
-        "intentDict": {},
-        "sentences": [],
+        "stemDict": {
+          "アマイ,リンゴ": {
+            "intent": "食べ物",
+            "domain": "default"
+          }
+        },
+        "intentDict": {
+          "食べ物": "default"
+        },
+        "sentences": [
+          {
+            "domain": "default",
+            "utterance": "りんご 甘い",
+            "intent": "食べ物"
+          }
+        ],
         "domains": {
           "master_domain": {
             "settings": {
@@ -60,10 +73,27 @@
               "filterZeros": true,
               "log": true
             },
-            "features": {},
-            "intents": {},
-            "intentFeatures": {},
-            "featuresToIntent": {},
+            "features": {
+              "リンゴ": 1,
+              "アマイ": 1
+            },
+            "intents": {
+              "食べ物": 1
+            },
+            "intentFeatures": {
+              "食べ物": {
+                "リンゴ": 1,
+                "アマイ": 1
+              }
+            },
+            "featuresToIntent": {
+              "リンゴ": [
+                "食べ物"
+              ],
+              "アマイ": [
+                "食べ物"
+              ]
+            },
             "neuralNetwork": {
               "settings": {
                 "locale": "ja",
@@ -75,14 +105,33 @@
                 "spellCheckDistance": 1,
                 "filterZeros": true,
                 "log": true
-              }
+              },
+              "features": [
+                "リンゴ",
+                "アマイ"
+              ],
+              "intents": [
+                "食べ物"
+              ],
+              "perceptrons": [
+                [
+                  5.692978382110596,
+                  5.692978382110596,
+                  2.8527748842713336
+                ]
+              ]
             }
           }
         }
       }
     },
     "intentDomains": {},
-    "extraSentences": []
+    "extraSentences": [
+      [
+        "ja",
+        "りんご 甘い"
+      ]
+    ]
   },
   "ner": {
     "settings": {
@@ -96,7 +145,15 @@
     "settings": {
       "tag": "nlg-manager"
     },
-    "responses": {}
+    "responses": {
+      "ja": {
+        "食べ物": [
+          {
+            "answer": "かなり甘いです"
+          }
+        ]
+      }
+    }
   },
   "actionManager": {
     "settings": {

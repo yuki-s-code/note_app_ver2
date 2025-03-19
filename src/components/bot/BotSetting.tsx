@@ -17,6 +17,7 @@ import {
   useQueryBot,
   useQueryBotCategory,
   useQueryIntents,
+  useQuerySynonyms,
 } from "@/libs/hooks/noteHook/useQueryBot";
 import { ErrorComponent } from "./ErrorComponent";
 import { BotEdit } from "./BotEdit";
@@ -31,6 +32,8 @@ import toast from "react-hot-toast";
 import SuccessToast from "../atoms/toast/SuccessToast";
 import ErrorToast from "../atoms/toast/ErrorToast"; // ErrorToast をインポート
 import { Loding } from "../atoms/fetch/Loding";
+import SynonymManager from "./SynonymManager";
+import uid from "@/libs/utils/uid";
 
 export interface ModelStyle {
   id: string;
@@ -59,11 +62,15 @@ export const BotSetting: FC<{ setEditedOpen: (open: boolean) => void }> = ({
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [selectedBot, setSelectedBot] = useState<ModelStyle | null>(null);
-
+  const [synonymList, setSynonymList] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [intentManagerOpen, setIntentManagerOpen] = useState(false);
-
+  const [synonymManagerOpen, setSynonymManagerOpen] = useState(false);
+  const [basicWord, setBasicWord] = useState(""); // 基本語（word）
+  const [selectedSynonymId, setSelectedSynonymId] = useState<string | null>(
+    null
+  ); // 編集対象ID
   const {
     data: botData,
     status: botStatus,
@@ -85,8 +92,10 @@ export const BotSetting: FC<{ setEditedOpen: (open: boolean) => void }> = ({
     refetch: refetchIntents,
   } = useQueryIntents();
 
+  const { data: synonymData, refetch: refetchSynonym } = useQuerySynonyms();
   // ★ 追加: 手動トレーニング用
-  const { deleteBot, trainNLP } = useMutateBot();
+  const { deleteBot, trainNLP, addSynonym, updateSynonym, deleteSynonym }: any =
+    useMutateBot();
 
   const bots = useMemo(() => {
     if (!botData) return [];
@@ -140,6 +149,53 @@ export const BotSetting: FC<{ setEditedOpen: (open: boolean) => void }> = ({
     },
     [deleteBot]
   );
+  const resetSynonymForm = () => {
+    setBasicWord("");
+    setSynonymList([]);
+    setSelectedSynonymId(null);
+  };
+
+  // Synonym 登録 or 更新
+  // 保存処理
+  const handleSaveSynonym = () => {
+    const synonymDataObj = {
+      id: selectedSynonymId || uid(),
+      word: basicWord,
+      synonyms: synonymList,
+    };
+    const mutation = selectedSynonymId ? updateSynonym : addSynonym;
+
+    mutation.mutate(synonymDataObj, {
+      onSuccess: () => {
+        toast.custom(() => <SuccessToast message="Synonymを保存しました" />);
+        resetSynonymForm();
+        refetchSynonym();
+        setSynonymManagerOpen(false);
+      },
+      onError: () =>
+        toast.custom(() => <ErrorToast message="Synonym保存失敗" />),
+    });
+  };
+
+  // 削除用
+  const handleDeleteSynonym = (id: string) => {
+    deleteSynonym.mutate(id, {
+      onSuccess: () => {
+        toast.custom(() => <SuccessToast message="Synonymを削除しました" />);
+        refetchSynonym();
+      },
+      onError: () =>
+        toast.custom(() => <ErrorToast message="Synonym削除失敗" />),
+    });
+  };
+
+  // ★ 編集時に呼ばれる
+  const handleEditSynonym = (synonym: any) => {
+    setBasicWord(synonym.word);
+    setSynonymList(synonym.synonyms);
+    setSelectedSynonymId(synonym.id);
+    setSynonymManagerOpen(true);
+  };
 
   // ボットデータのフィルタリング
   const filteredBots = useMemo(() => {
@@ -338,6 +394,17 @@ export const BotSetting: FC<{ setEditedOpen: (open: boolean) => void }> = ({
               >
                 インテント管理
               </Button>
+              <Button
+                placeholder
+                onPointerEnterCapture
+                onPointerLeaveCapture
+                onClick={() => setSynonymManagerOpen(true)}
+                className="flex items-center gap-3 ml-4"
+                size="sm"
+                color="amber"
+              >
+                表現ゆれ管理
+              </Button>
               {/* ★ 学習ボタン追加 */}
               <Button
                 placeholder
@@ -398,6 +465,7 @@ export const BotSetting: FC<{ setEditedOpen: (open: boolean) => void }> = ({
           id="bot-table-body"
           className="hover-scrollbar overflow-auto px-4 flex-1 bg-white"
         >
+          {/* 検索フィルター */}
           <div className="mb-4">
             <SearchFilter
               searchTerm={searchTerm}
@@ -407,6 +475,7 @@ export const BotSetting: FC<{ setEditedOpen: (open: boolean) => void }> = ({
               categories={categories}
             />
           </div>
+
           <InfiniteScroll
             dataLength={filteredBots.length}
             next={fetchNextPage}
@@ -684,6 +753,69 @@ export const BotSetting: FC<{ setEditedOpen: (open: boolean) => void }> = ({
           </div>
         </div>
       )}
+      <>
+        {/* Synonym管理モーダル */}
+        {synonymManagerOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-6 rounded shadow w-full max-w-3xl">
+              <div className="flex justify-between mb-4">
+                <Typography
+                  placeholder
+                  onPointerEnterCapture
+                  onPointerLeaveCapture
+                  variant="h5"
+                >
+                  表現ゆれ管理
+                </Typography>
+                <Button
+                  placeholder
+                  onPointerEnterCapture
+                  onPointerLeaveCapture
+                  onClick={() => setSynonymManagerOpen(false)}
+                >
+                  <X />
+                </Button>
+              </div>
+
+              <SynonymManager
+                word={basicWord}
+                setWord={setBasicWord}
+                synonyms={synonymList}
+                onAddSynonym={(word) => setSynonymList([...synonymList, word])}
+                onRemoveSynonym={(index) => {
+                  const updated = [...synonymList];
+                  updated.splice(index, 1);
+                  setSynonymList(updated);
+                }}
+                candidateWords={["写真", "画像", "フォト"]}
+                handleDeleteSynonym={handleDeleteSynonym}
+                handleEditSynonym={handleEditSynonym}
+              />
+
+              <div className="flex justify-end mt-4 gap-4">
+                <Button
+                  placeholder
+                  onPointerEnterCapture
+                  onPointerLeaveCapture
+                  color="amber"
+                  onClick={() => resetSynonymForm()} // ✅ 必ず関数を呼び出す（()をつける）
+                >
+                  クリア
+                </Button>
+                <Button
+                  placeholder
+                  onPointerEnterCapture
+                  onPointerLeaveCapture
+                  color="blue"
+                  onClick={handleSaveSynonym}
+                >
+                  保存
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
     </>
   );
 };

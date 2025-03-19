@@ -132,6 +132,35 @@ export const useMutateBot = () => {
     }
   );
 
+  // ★ Synonym追加
+  const addSynonym = useMutation(
+    (synonymData) => axiosInstance.post(`${apiUrl}/add_synonym`, synonymData),
+    {
+      onSuccess: () => queryClient.invalidateQueries(["bot", "synonyms"]),
+      onError: (error) => console.error("Synonymの追加失敗:", error),
+    }
+  );
+
+  // ★ Synonym削除
+  const deleteSynonym = useMutation(
+    (synonymId: string) =>
+      axiosInstance.delete(`${apiUrl}/delete_synonym/${synonymId}`),
+    {
+      onSuccess: () => queryClient.invalidateQueries(["bot", "synonyms"]),
+      onError: (error) => console.error("Synonymの削除失敗:", error),
+    }
+  );
+
+  // ★ Synonym更新
+  const updateSynonym = useMutation(
+    (synonymData) =>
+      axiosInstance.post(`${apiUrl}/update_synonym`, synonymData),
+    {
+      onSuccess: () => queryClient.invalidateQueries(["bot", "synonyms"]),
+      onError: (error) => console.error("Synonymの更新失敗:", error),
+    }
+  );
+
   return {
     addBotCategory,
     addBot,
@@ -142,5 +171,8 @@ export const useMutateBot = () => {
     deleteIntent,
     updateIntent,
     trainNLP,
+    addSynonym,
+    deleteSynonym,
+    updateSynonym,
   };
 };
